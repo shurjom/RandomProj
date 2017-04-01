@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Game</title>
+        <meta name="viewport" content="initial-scale=1"/>
+		<style>
+			html, body {
+				margin: 0;
+				padding: 0;
+				border: none;
+			}
+			body {
+			width: 100%;
+			}
+			#gameCanvas, canvas {
+				margin: 0;
+				padding: 0;
+				border: none;
+                display: block;
+			}
+            #overlay {
+                background: white;
+                background: rgba(255, 255, 255, 0.5);
+                padding: 1em;
+                font-family: sans-serif;
+            }
+            p {
+                padding: 0;
+                margin: 0;
+            }
+		</style>
+        <!-- Jquery
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
+        <!-- three.min
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.min.js"></script>
+        -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
+        <script src="build/three.min.js"></script>
+        
+        <!-- My Code -->
+		<script src='Scripts/keyboard.js'></script>
+		<script src='Scripts/game.js'></script>
+        
+        <!-- Physics -->
+		<script src='Scripts/physi.js'></script>
+        
+        <!-- Water and mirror -->
+		<script src="Scripts/js/Mirror.js"></script>
+        
+        
+
+        
+	</head>
+	<body onload='setup();'>
+		<div id='gameCanvas'>
+        </div>
+        <div id="overlay" style="position: absolute; left: 1em; top: 1em;">
+            <p>Score: <span id="score"/></p>
+            <p><a href="http://turbo.coffee/">Turbo Coffee</a></p>
+        </div>
+	</body>
+</html>

@@ -1,0 +1,36 @@
+0x7fff6745b650
+0x7fff6745b600 
+0x7fff6745b5f8 
+0x7fff6745b608 
+0x7fff6745b5fc 
+0x7fff6745b5f6 
+0x7fff6745b5f3 
+0x7fff6745b5f4 
+0x7fff6745b5f5 
+0x7fff6745b610
+0x7fff6745b618
+0x7fff6745b620
+0x7fff6745b628
+0x7fff6745b630
+0x7fff6745b638 
+0x7fff6745b640 
+0x7fff6745b648 
+
+0x7ffcac75c1e0 16 long double
+0x7ffcac75c190 8 double
+0x7ffcac75c188 4 float
+0x7ffcac75c198 8 long
+0x7ffcac75c18c 4 int
+0x7ffcac75c186 2 short
+0x7ffcac75c183 1 char1
+0x7ffcac75c184 1 char2
+0x7ffcac75c185 1 boolVal 
+
+0x7ffcac75c1a0 8 long double pointer
+0x7ffcac75c1a8 8 double pointer
+0x7ffcac75c1b0 8 float pointer
+0x7ffcac75c1b8 8 long pointer
+0x7ffcac75c1c0 8 int pointer
+0x7ffcac75c1c8 8 short pointer
+0x7ffcac75c1d0 1 char pointer
+0x7ffcac75c1d8 1 bool pointer

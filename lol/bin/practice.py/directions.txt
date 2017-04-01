@@ -1,0 +1,5 @@
+penup 
+pendown 
+color green 
+goto 4 7
+point 20 100 10 

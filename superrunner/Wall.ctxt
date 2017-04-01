@@ -1,0 +1,4 @@
+#BlueJ class context
+comment0.params=myWidth\ myHeight
+comment0.target=Wall(int,\ int)
+numComments=1

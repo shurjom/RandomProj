@@ -1,0 +1,288 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "\n// --------------------------------------------- //\n// ------- 3D PONG built with Three.JS --------- //\n// -------- Created by Nikhil Suresh ----------- //\n// -------- Three.JS is by Mr. doob  ----------- //\n// --------------------------------------------- //\n\n// ------------------------------------- //\n// ------- GLOBAL VARIABLES ------------ //\n// ------------------------------------- //\n\n// scene object variables\nvar renderer, scene, camera, pointLight, spotLight;\n\n// field variables\nvar fieldWidth = 400, fieldHeight = 200;\n\n\n\n// game-related variables\nvar score1 = 0, score2 = 0;\n// you can change this to any positive whole number\nvar maxScore = 7;\n\n// set opponent reflexes (0 - easiest, 1 - hardest)\nvar difficulty = 0.2;\n\n// ------------------------------------- //\n// ------- GAME FUNCTIONS -------------- //\n// ------------------------------------- //\n\nfunction setup()\n{\n	// Set up physics\n	Physijs.scripts.worker = 'Scripts/physijs_worker.js';\n    Physijs.scripts.ammo = 'ammo.js';\n	\n	// update the board to reflect the max score for match win\n	document.getElementById(\"winnerBoard\").innerHTML = \"First to \" + maxScore + \" wins!\";\n	\n	// now reset player and opponent scores\n	score1 = 0;\n	score2 = 0;\n	\n	// set up all the 3D objects in the scene	\n	createScene();\n	\n	// and let's get cracking!\n	draw();\n}\n\nfunction createScene()\n{\n	// set the scene size\n	var WIDTH = window.innerWidth;\n	var HEIGHT = window.innerHeight;\n\n	// set some camera attributes\n	var VIEW_ANGLE = 50,\n	  ASPECT = WIDTH / HEIGHT,\n	  NEAR = 0.1,\n	  FAR = 10000;\n\n	var c = document.getElementById(\"gameCanvas\");\n\n	// create a WebGL renderer, camera\n	// and a scene\n	renderer = new THREE.WebGLRenderer({antialias: true});\n	camera =\n	  new THREE.PerspectiveCamera(\n		VIEW_ANGLE,\n		ASPECT,\n		NEAR,\n		FAR);\n\n	scene = new Physijs.Scene();\n\n	// add the camera to the scene\n	scene.add(camera);\n	\n	// set a default position for the camera\n	// not doing this somehow messes up shadow rendering\n	camera.position.z = 320;\n	\n	// start the renderer\n	renderer.setSize(WIDTH, HEIGHT);\n\n	// attach the render-supplied DOM element\n	c.appendChild(renderer.domElement);\n\n	// set up the playing surface plane \n	var planeWidth = fieldWidth,\n		planeHeight = fieldHeight,\n		planeQuality = 10;\n		\n	\n	// create the plane's material	\n	var planeMaterial =\n	  new THREE.MeshLambertMaterial(\n		{\n		  color: 0x4BD121\n		});\n	// create the table's material\n	var tableMaterial =\n	  new THREE.MeshLambertMaterial(\n		{\n		  color: 0x111111\n		});\n	// create the pillar's material\n	var pillarMaterial =\n	  new THREE.MeshLambertMaterial(\n		{\n		  color: 0x534d0d\n		});\n	// create the ground's material\n	var groundMaterial =\n	  new THREE.MeshLambertMaterial(\n		{\n		  color: 0x888888\n		});\n		\n		\n	// create the playing surface plane\n	var plane = new Physijs.BoxMesh(\n\n	  new THREE.PlaneGeometry(\n		planeWidth * 0.95,	// 95% of table width, since we want to show where the ball goes out-of-bounds\n		planeHeight,\n		planeQuality,\n		planeQuality),\n\n	  planeMaterial, 0);\n	  \n	scene.add(plane);\n	plane.receiveShadow = true;\n	\n	var table = new Physijs.BoxMesh(\n\n	  new THREE.CubeGeometry(\n		planeWidth * 1.05,	// this creates the feel of a billiards table, with a lining\n		planeHeight * 1.03,\n		100,				// an arbitrary depth, the camera can't see much of it anyway\n		planeQuality,\n		planeQuality,\n		1),\n\n	  tableMaterial, 0);\n	table.position.z = -51;	// we sink the table into the ground by 50 units. The extra 1 is so the plane can be seen\n	scene.add(table);\n	table.receiveShadow = true;	\n		\n	// // set up the sphere vars\n	// lower 'segment' and 'ring' values will increase performance\n	var radius = 5,\n		segments = 6,\n		rings = 6;\n		\n	// // create the sphere's material\n	var sphereMaterial =\n	  new THREE.MeshLambertMaterial(\n		{\n		  color: 0xD43001\n		});\n		\n	// Create a ball with sphere geometry\n	ball = new Physijs.SphereMesh(\n\n	  new THREE.SphereGeometry(\n		radius,\n		segments,\n		rings),\n\n	  sphereMaterial, 1);\n\n	// // add the sphere to the scene\n	scene.add(ball);\n	\n	ball.position.x = 0;\n	ball.position.y = 0;\n	// set ball above the table surface\n	ball.position.z = radius + 200;\n	ball.receiveShadow = true;\n    ball.castShadow = true;\n	\n	// we iterate 10x (5x each side) to create pillars to show off shadows\n	// this is for the pillars on the left\n	for (var i = 0; i < 5; i++)\n	{\n		var backdrop = new Physijs.BoxMesh(\n		\n		  new THREE.CubeGeometry( \n		  30, \n		  30, \n		  300, \n		  1, \n		  1,\n		  1 ),\n\n		  pillarMaterial, 0);\n		  \n		backdrop.position.x = -50 + i * 100;\n		backdrop.position.y = 230;\n		backdrop.position.z = -30;		\n		backdrop.castShadow = true;\n		backdrop.receiveShadow = true;		  \n		scene.add(backdrop);	\n	}\n	// we iterate 10x (5x each side) to create pillars to show off shadows\n	// this is for the pillars on the right\n	for (var i = 0; i < 5; i++)\n	{\n		var backdrop = new Physijs.BoxMesh(\n\n		  new THREE.CubeGeometry( \n		  30, \n		  30, \n		  300, \n		  1, \n		  1,\n		  1 ),\n\n		  pillarMaterial, 0);\n		  \n		backdrop.position.x = -50 + i * 100;\n		backdrop.position.y = -230;\n		backdrop.position.z = -30;\n		backdrop.castShadow = true;\n		backdrop.receiveShadow = true;		\n		scene.add(backdrop);	\n	}\n	\n	// finally we finish by adding a ground plane\n	// to show off pretty shadows\n	var ground = new Physijs.PlaneMesh(\n\n	  new THREE.CubeGeometry( \n	  1000, \n	  1000, \n	  3, \n	  1, \n	  1,\n	  1 ),\n\n	  groundMaterial);\n    // set ground to arbitrary z position to best show off shadowing\n	ground.position.z = -132;\n	ground.receiveShadow = true;	\n	scene.add(ground);		\n		\n	// // create a point light\n	pointLight =\n	  new THREE.PointLight(0xF8D898);\n\n	// set its position\n	pointLight.position.x = -1000;\n	pointLight.position.y = 0;\n	pointLight.position.z = 1000;\n	pointLight.intensity = 2.9;\n	pointLight.distance = 10000;\n	// add to the scene\n	scene.add(pointLight);\n		\n	// add a spot light\n	// this is important for casting shadows\n    spotLight = new THREE.SpotLight(0xF8D898);\n    spotLight.position.set(0, 0, 460);\n    spotLight.intensity = 1.5;\n    spotLight.castShadow = true;\n    scene.add(spotLight);\n	\n	// MAGIC SHADOW CREATOR DELUXE EDITION with Lights PackTM DLC\n	renderer.shadowMapEnabled = true;		\n}\n\nfunction draw()\n{	\n	// Physijs simulate\n	scene.simulate(); // run physics\n	// draw THREE.JS scene\n	renderer.render(scene, camera);\n	// loop draw function call\n	requestAnimationFrame(draw);\n	\n	ballPhysics();\n	cameraPhysics();\n	playerBallMovement();\n}\n\nfunction ballPhysics()\n{\n	\n}\n\n\n\n\n// Handles player's movement\nfunction playerBallMovement()\n{\n	\n	// move left\n	if (Key.isDown(Key.A))		\n	{\n		// Move left\n		ball.velocity.y -= 10;\n	}	\n	// move right\n	else if (Key.isDown(Key.D))\n	{\n		ball.velocity.y += 10;\n	}\n	// else don't move paddle\n	else\n	{\n		// stop the paddle\n	    ball.velocity.y = 0;\n	    ball.velocity.x = 0;\n	    ball.velocity.z = 0;\n	}\n	/*\n	paddle1.scale.y += (1 - paddle1.scale.y) * 0.2;	\n	paddle1.scale.z += (1 - paddle1.scale.z) * 0.2;	\n	paddle1.position.y += paddle1DirY;\n	*/\n	\n}\n\n// Handles camera and lighting logic\nfunction cameraPhysics()\n{\n	// we can easily notice shadows if we dynamically move lights during the game\n	spotLight.position.x = ball.position.x * 2;\n	spotLight.position.y = ball.position.y * 2;\n	\n	// move to behind the player's paddle\n	camera.position.x = ball.position.x - 400;\n	camera.position.y = ball.position.y + 300;\n	camera.position.z = ball.position.z + 200;\n	\n	// rotate to face towards the opponent\n	camera.rotation.x = -0.01 * (ball.position.y) * Math.PI/180;\n	camera.rotation.y = -60 * Math.PI/180;\n	camera.rotation.z = -90 * Math.PI/180;\n}\n\n",
+			"file": "game.js",
+			"file_size": 7498,
+			"file_write_time": 130934220906293759,
+			"settings":
+			{
+				"buffer_size": 7556,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "keyboard.js",
+			"settings":
+			{
+				"buffer_size": 482,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/C/Users/Kristofer/Desktop/Web Game Dev/GameThing/index.html",
+			"settings":
+			{
+				"buffer_size": 1113,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 151.0,
+		"last_filter": "install p",
+		"selected_items":
+		[
+			[
+				"install p",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 600.0
+	},
+	"console":
+	{
+		"height": 283.0,
+		"history":
+		[
+			"jshint",
+			"npm install -g jshint",
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+	],
+	"find":
+	{
+		"height": 45.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"table"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "game.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7556,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								473,
+								473
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "keyboard.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 482,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/C/Users/Kristofer/Desktop/Web Game Dev/GameThing/index.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1113,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								191,
+								191
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 222.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 45.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "ProjSublimeWebGame.sublime-project",
+	"replace":
+	{
+		"height": 86.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 225.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

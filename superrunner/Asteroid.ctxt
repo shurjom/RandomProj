@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.params=circle
+comment0.target=Asteroid(Circle)
+comment1.params=
+comment1.target=void\ move()
+comment2.params=g
+comment2.target=void\ render(java.awt.Graphics)
+numComments=3

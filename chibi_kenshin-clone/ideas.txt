@@ -1,0 +1,17 @@
+IDEA BLOCK('BLOCK PROPERTIES'):
+	Add options to have friction of blocks on top and sides. Also a jumping variable. And bounce.  
+	IDEA BLOCK('Triangle specific'):
+		Option for slide
+
+IDEA BLOCK('Objects'):
+	Bouncy block
+	Moving block
+	Enemies (later man)
+	Force block(collide then fly in specified direction)
+	Gravity modify block
+	A way to change into the helicopter style game. 
+	block that changes player stats.
+	Damage block.
+	Teleport block.
+	
+	

@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.params=xVel\ yVel\ x\ y\ color
+comment0.target=Bullet(double,\ double,\ double,\ double,\ java.awt.Color)
+comment1.params=g
+comment1.target=void\ render(java.awt.Graphics)
+numComments=2

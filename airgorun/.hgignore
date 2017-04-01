@@ -1,0 +1,16 @@
+syntax: glob
+geany_run_script.bat
+Makefile.win
+*.o
+*.exe
+*.png
+*.sprite
+*.ttf
+*.res
+windurrs.mk
+Thumbs.db
+*.orig
+*~
+*#
+
+.settings
